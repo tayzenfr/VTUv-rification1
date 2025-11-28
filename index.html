@@ -2,163 +2,497 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>formulaire verification VTU</title>
+    <title>Formulaire vérification VTU</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background: #0f172a;
-            color: #e5e7eb;
         }
+
+        :root {
+            --bg: #020617;
+            --bg-soft: #020818;
+            --border: #1f2937;
+            --accent: #22c55e;
+            --accent-strong: #16a34a;
+            --accent-blue: #0ea5e9;
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-pill: 999px;
+            --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(34,197,94,0.12), transparent 55%),
+                radial-gradient(circle at bottom right, rgba(14,165,233,0.14), transparent 55%),
+                #020617;
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ========= HEADER ========= */
+
         header {
-            background: linear-gradient(135deg, #16a34a, #22c55e);
-            padding: 1.7rem 1rem;
+            position: relative;
+            background: linear-gradient(135deg, #16a34a, #22c55e, #0ea5e9);
+            padding: 1.8rem 1rem 2.3rem;
             text-align: center;
             color: white;
+            overflow: hidden;
         }
-        h1 { margin: 0; font-size: 1.9rem; }
+
+        header::before {
+            content: "";
+            position: absolute;
+            inset: -40%;
+            background:
+                radial-gradient(circle at 10% 0%, rgba(34,197,94,0.4), transparent 55%),
+                radial-gradient(circle at 90% 100%, rgba(56,189,248,0.35), transparent 55%);
+            opacity: 0.8;
+            filter: blur(22px);
+            animation: headerGlow 18s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        header * {
+            position: relative;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 2.4vw, 2rem);
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            text-shadow: 0 6px 20px rgba(0,0,0,0.55);
+        }
+
+        .header-sub {
+            margin-top: .4rem;
+            font-size: .9rem;
+            opacity: .95;
+        }
+
+        /* ========= MAIN / FORM ========= */
 
         main {
-            max-width: 1100px;
-            margin: 1.5rem auto 3rem;
-            padding: 0 1rem;
+            max-width: 1020px;
+            margin: -1.4rem auto 3rem;
+            padding: 0 .9rem 2.4rem;
+            position: relative;
+            z-index: 1;
         }
 
         form {
-            background: #020617;
-            border-radius: .9rem;
-            padding: 1.5rem 1.2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,.5);
-            border: 1px solid #1f2937;
+            background: rgba(2, 6, 23, 0.98);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem 1.3rem 1.4rem;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid rgba(148,163,184,0.18);
+            backdrop-filter: blur(12px);
+            animation: cardIn .5s cubic-bezier(.16,1,.3,1);
         }
+
+        /* ========= BANDEAU VTU ========= */
+
+        .form-header {
+            background: linear-gradient(120deg, #16a34a, #22c55e, #0ea5e9);
+            border-radius: var(--radius-md);
+            padding: .75rem .95rem;
+            margin-bottom: 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: .18rem;
+            color: #ecfdf5;
+            box-shadow: 0 10px 25px rgba(15,118,110,0.45);
+        }
+
+        .form-header-title {
+            font-size: .95rem;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .form-header-sub {
+            font-size: .82rem;
+            opacity: .95;
+        }
+
+        /* ========= FIELDSETS ========= */
+
         fieldset {
-            border: 1px solid #1f2937;
-            border-radius: .7rem;
-            margin-bottom: 1.4rem;
-            padding: 1.1rem 1.1rem 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-bottom: 1.1rem;
+            padding: 1rem .95rem .95rem;
+            background: rgba(15,23,42,0.95);
         }
+
         legend {
-            padding: 0 .5rem;
+            padding: 0 .45rem;
             font-weight: 600;
-            color: #22c55e;
-            font-size: 1rem;
+            color: var(--accent);
+            font-size: .9rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
         }
+
+        .legend-help {
+            font-size: .85rem;
+            color: var(--muted);
+            margin-top: .25rem;
+        }
+
+        /* ========= GRID ========= */
 
         .grid-2 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 1.1rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: .9rem;
         }
 
+        /* ========= LABELS / INPUTS ========= */
+
         label {
-            font-size: .95rem;
+            font-size: .85rem;
             display: block;
-            margin-bottom: .35rem;
-            color: #9ca3af;
+            margin-bottom: .28rem;
+            color: var(--muted);
         }
 
         input[type="text"],
         input[type="date"],
         textarea {
             width: 100%;
-            padding: .7rem .75rem;
+            padding: .65rem .75rem;
             border-radius: .55rem;
-            border: 1px solid #374151;
+            border: 1px solid #1f2937;
             background: #020617;
-            color: #e5e7eb;
-            font-size: 1rem;
+            color: var(--text);
+            font-size: .9rem;
+            transition: border-color .16s ease, box-shadow .16s ease, background .16s ease,
+                        transform .08s ease;
         }
-        textarea { min-height: 80px; resize: vertical; }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px rgba(34,197,94,0.5), 0 0 12px rgba(34,197,94,0.25);
+            background: #02041b;
+            transform: translateY(-1px);
+        }
+
+        /* ========= ITEMS ========= */
 
         .item-row {
             display: grid;
-            grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.5fr) minmax(0, 1.5fr);
-            gap: .85rem;
+            grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
+            gap: .75rem;
             align-items: center;
-            padding: .55rem .6rem;
-            border-radius: .7rem;
+            padding: .55rem .65rem;
+            border-radius: .75rem;
             background: #020617;
-            border: 1px solid #111827;
-            margin-bottom: .55rem;
+            border: 1px solid #0b1220;
+            margin-bottom: .45rem;
+            transition: border-color .16s ease, background .16s ease, transform .08s ease,
+                        box-shadow .12s ease;
         }
+
+        .item-row:hover {
+            border-color: rgba(34,197,94,0.5);
+            background: #020b1a;
+            transform: translateY(-1px);
+            box-shadow: 0 0 16px rgba(34,197,94,0.25);
+        }
+
         .item-name {
-            font-size: .95rem;
+            font-size: .9rem;
             font-weight: 500;
         }
 
         .etat-group {
             display: flex;
             flex-wrap: wrap;
-            gap: .45rem;
-            font-size: .9rem;
+            gap: .35rem;
+            font-size: .8rem;
         }
+
         .etat-group label {
             margin-bottom: 0;
             display: inline-flex;
             align-items: center;
-            gap: .35rem;
-            padding: .4rem .8rem;
-            border-radius: 999px;
-            border: 1px solid #374151;
+            gap: .3rem;
+            padding: .32rem .7rem;
+            border-radius: var(--radius-pill);
+            border: 1px solid #334155;
             background: #020617;
+            cursor: pointer;
+            transition: background .14s ease, border-color .14s ease, transform .08s ease,
+                        box-shadow .12s ease;
         }
+
+        .etat-group label:hover {
+            border-color: rgba(148,163,184,0.85);
+            background: #020a18;
+            box-shadow: 0 0 10px rgba(148,163,184,0.35);
+        }
+
         .etat-group input[type="radio"] {
-            transform: scale(1.3);
+            transform: scale(1.15);
         }
 
         .small-input {
-            font-size: .9rem;
-            padding: .5rem .6rem;
+            font-size: .8rem;
+            padding: .45rem .6rem;
             border-radius: .5rem;
-            border: 1px solid #374151;
+            border: 1px solid #1f2937;
             background: #020617;
-            color: #e5e7eb;
-            width: 100%;
+            color: var(--text);
         }
+
+        /* ========= ACTIONS ========= */
 
         .actions {
             display: flex;
             flex-wrap: wrap;
-            gap: .85rem;
-            margin-top: 1.2rem;
-        }
-        button {
-            border: none;
-            border-radius: .65rem;
-            padding: .8rem 1.3rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-        button[type="submit"] {
-            background: #22c55e;
-            color: #052e16;
-        }
-        button.secondary {
-            background: #111827;
-            color: #e5e7eb;
-            border: 1px solid #1f2937;
+            gap: .75rem;
+            margin-top: 1rem;
         }
 
-        @media (max-width: 900px) {
-            main { padding: 0 .6rem; }
-            form { padding: 1.2rem .9rem; }
+        button {
+            border: none;
+            border-radius: .7rem;
+            padding: .78rem 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: .9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: .45rem;
+            transition: transform .08s ease, box-shadow .14s ease, background .14s ease,
+                        filter .14s ease;
+        }
+
+        button[type="submit"] {
+            background: linear-gradient(135deg, #16a34a, #22c55e, #0ea5e9);
+            color: #022c22;
+            box-shadow:
+                0 10px 22px rgba(16,185,129,0.5),
+                0 0 16px rgba(14,165,233,0.35);
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.03);
+            box-shadow:
+                0 14px 28px rgba(16,185,129,0.6),
+                0 0 18px rgba(14,165,233,0.45);
+        }
+
+        button.secondary {
+            background: #020617;
+            color: var(--text);
+            border: 1px solid #1f2937;
+            box-shadow: 0 0 10px rgba(15,23,42,0.6);
+        }
+
+        button.secondary:hover {
+            background: #020b24;
+            transform: translateY(-1px);
+            box-shadow: 0 0 14px rgba(148,163,184,0.4);
+        }
+
+        /* ========= MODAL ========= */
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15,23,42,0.75);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .18s ease;
+            z-index: 50;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: #020617;
+            border-radius: 16px;
+            padding: 1.2rem 1.1rem 1rem;
+            max-width: 420px;
+            width: calc(100% - 2.4rem);
+            border: 1px solid rgba(148,163,184,0.3);
+            box-shadow: 0 22px 40px rgba(0,0,0,0.7);
+            animation: modalIn .18s ease-out;
+        }
+
+        .modal-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: .5rem;
+        }
+
+        .modal-text {
+            font-size: .85rem;
+            color: var(--muted);
+            margin-bottom: .7rem;
+        }
+
+        .modal-list {
+            font-size: .82rem;
+            color: var(--muted);
+            margin-left: 1rem;
+            margin-bottom: .8rem;
+        }
+
+        .modal-list li {
+            margin-bottom: .25rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: .6rem;
+            justify-content: flex-end;
+            margin-top: .4rem;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid #374151;
+            box-shadow: none;
+        }
+
+        .btn-ghost:hover {
+            background: #020617;
+            box-shadow: 0 0 10px rgba(148,163,184,0.35);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #16a34a, #22c55e, #0ea5e9);
+            color: #022c22;
+            box-shadow:
+                0 8px 18px rgba(16,185,129,0.5),
+                0 0 14px rgba(14,165,233,0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow:
+                0 10px 22px rgba(16,185,129,0.6),
+                0 0 18px rgba(14,165,233,0.5);
+        }
+
+        /* ========= RESPONSIVE ========= */
+
+        @media (max-width: 768px) {
+            main {
+                padding-inline: .7rem;
+            }
+            form {
+                padding: 1.2rem 1rem 1.3rem;
+                border-radius: 16px;
+            }
             .item-row {
                 grid-template-columns: 1fr;
+                padding: .6rem .65rem;
+            }
+            .actions {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding-inline: .8rem;
+            }
+            .header-sub {
+                font-size: .82rem;
+            }
+            .form-header {
+                padding: .65rem .75rem;
+            }
+            .form-header-title {
+                font-size: .9rem;
+            }
+            .form-header-sub {
+                font-size: .78rem;
+            }
+        }
+
+        /* ========= ANIMATIONS ========= */
+
+        @keyframes cardIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px) scale(.985);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes headerGlow {
+            from {
+                transform: translate3d(-10px, 5px, 0) scale(1.01);
+            }
+            to {
+                transform: translate3d(10px, -5px, 0) scale(1.05);
+            }
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(.97);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
             }
         }
     </style>
 </head>
 <body>
 <header>
-    <h1>formulaire verification VTU</h1>
+    <h1>Formulaire vérification VTU</h1>
+    <p class="header-sub">Contrôle rapide et propre du matériel du VTU</p>
 </header>
 
 <main>
     <form id="inventaireForm">
+        <!-- BANDEAU VTU AVEC DÉGRADÉ VERT / BLEU -->
+        <div class="form-header">
+            <div class="form-header-title">VTU – Vérification</div>
+            <div class="form-header-sub">Contrôle journalier du matériel et observations</div>
+        </div>
+
         <fieldset>
             <legend>Informations générales</legend>
             <div class="grid-2">
@@ -175,8 +509,8 @@
 
         <fieldset>
             <legend>Matériel VTU</legend>
-            <p style="font-size:.9rem;color:#9ca3af;margin-top:0;">
-                Pour chaque matériel : <strong>Présent</strong>, <strong>Manquant</strong> ou <strong>HS</strong>.
+            <p class="legend-help">
+                Pour chaque matériel : <strong>Présent</strong>, <strong>Manquant</strong> ou <strong>HS</strong>, avec remarque si besoin.
             </p>
             <div id="itemsContainer"></div>
         </fieldset>
@@ -184,15 +518,37 @@
         <fieldset>
             <legend>Observation générale</legend>
             <label for="observations">Observation générale</label>
-            <textarea id="observations" name="observations"></textarea>
+            <textarea id="observations" name="observations" placeholder="RAS, matériel manquant, problème particulier…"></textarea>
         </fieldset>
 
         <div class="actions">
-            <button type="submit">Exporter et envoyer</button>
-            <button type="button" class="secondary" id="resetFormBtn">Réinitialiser</button>
+            <button type="submit">📤 Exporter le contrôle & ouvrir l’e-mail</button>
+            <button type="button" class="secondary" id="resetFormBtn">🔁 Réinitialiser le formulaire</button>
         </div>
     </form>
 </main>
+
+<!-- MODAL DE CONFIRMATION -->
+<div class="modal-backdrop" id="confirmModal">
+    <div class="modal">
+        <div class="modal-title">Confirmer l’export du contrôle</div>
+        <div class="modal-text">
+            En validant, l’application va :
+        </div>
+        <ul class="modal-list">
+            <li>Télécharger un fichier <strong>CSV</strong> du contrôle VTU sur cet appareil ;</li>
+            <li>Ouvrir ta messagerie (ex : Gmail) vers la personne en charge ;</li>
+            <li>Tu devras ensuite <strong>joindre le fichier CSV</strong> avant d’envoyer l’e-mail.</li>
+        </ul>
+        <div class="modal-text">
+            Veux-tu continuer ?
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn-ghost" id="modalCancel">Retour</button>
+            <button type="button" class="btn-primary" id="modalConfirm">OK, continuer</button>
+        </div>
+    </div>
+</div>
 
 <script>
     const EMAIL_TO = "charpentreaupascal@gmail.com";
@@ -209,6 +565,8 @@
         "Raccord 110/70","Cage à chat","Couverture","Caisse en polystyrène","Pince reptile",
         "Crochets x2","Échelle télescopique"
     ];
+
+    let pendingRecord = null;
 
     function slug(str) {
         return str.toLowerCase()
@@ -230,7 +588,9 @@
                         <label><input type="radio" name="${id}" value="Manquant"> Manquant</label>
                         <label><input type="radio" name="${id}" value="HS"> HS</label>
                     </div>
-                    <div><input class="small-input" type="text" placeholder="Observation"></div>
+                    <div>
+                        <input class="small-input" type="text" placeholder="Observation (facultatif)">
+                    </div>
                 </div>
             `);
         });
@@ -283,7 +643,7 @@
 
 Le contrôle VTU du ${record.date} a été effectué par ${record.conducteur}.
 
-⚠️ IMPORTANT : le fichier du contrôle a été téléchargé sur cet ordinateur.
+⚠️ IMPORTANT : le fichier du contrôle a été téléchargé sur cet appareil.
 Avant d'envoyer cet e-mail, veuillez :
 
 1) Cliquer sur "Joindre un fichier" dans Gmail.
@@ -297,9 +657,20 @@ ${record.observations || "RAS"}
 Cordialement.`
         );
 
-        // 👉 Ouvre le client mail / Gmail
         window.location.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
     }
+
+    function openModal(record) {
+        pendingRecord = record;
+        document.getElementById("confirmModal").classList.add("show");
+    }
+
+    function closeModal() {
+        document.getElementById("confirmModal").classList.remove("show");
+        pendingRecord = null;
+    }
+
+    // ====== EVENTS ======
 
     document.getElementById("inventaireForm").addEventListener("submit", e => {
         e.preventDefault();
@@ -316,24 +687,33 @@ Cordialement.`
             return;
         }
 
-        const ok = confirm(
-"En cliquant sur OK :\n\n" +
-"- Un fichier CSV du contrôle VTU va être téléchargé sur cet ordinateur.\n" +
-"- Tu seras ensuite redirigé vers la messagerie (ex : Gmail).\n\n" +
-"Dans l'e-mail, il faudra JOINDRE le fichier CSV avant d'envoyer."
-        );
-        if (!ok) return;
-
-        // 1) Téléchargement du fichier CSV
-        exportCSV(record);
-
-        // 2) Ouverture de l'e-mail vers charpentreaupascal@gmail.com
-        openEmail(record);
+        // Ouvre la popup au lieu du confirm()
+        openModal(record);
     });
 
     document.getElementById("resetFormBtn").addEventListener("click", () => {
         if (confirm("Réinitialiser le formulaire ?")) {
             document.getElementById("inventaireForm").reset();
+        }
+    });
+
+    // Bouton retour de la modal
+    document.getElementById("modalCancel").addEventListener("click", () => {
+        closeModal();
+    });
+
+    // Bouton OK de la modal
+    document.getElementById("modalConfirm").addEventListener("click", () => {
+        if (!pendingRecord) return;
+        exportCSV(pendingRecord);
+        openEmail(pendingRecord);
+        closeModal();
+    });
+
+    // Fermer si on clique en dehors de la fenêtre
+    document.getElementById("confirmModal").addEventListener("click", (e) => {
+        if (e.target.id === "confirmModal") {
+            closeModal();
         }
     });
 
