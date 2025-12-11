@@ -263,6 +263,47 @@
             color: var(--text);
         }
 
+        /* ========= ÉTATS COLORÉS ========= */
+
+        .item-row.state-OK {
+            border-color: rgba(34,197,94,0.8);
+            background: #022c22;
+            box-shadow: 0 0 16px rgba(34,197,94,0.35);
+        }
+
+        .item-row.state-Manquant {
+            border-color: #f97316;
+            background: #1f1305;
+            box-shadow: 0 0 16px rgba(249,115,22,0.35);
+        }
+
+        .item-row.state-HS {
+            border-color: #ef4444;
+            background: #2b0a0a;
+            box-shadow: 0 0 16px rgba(239,68,68,0.35);
+        }
+
+        .etat-group label.etat-ok {
+            border-color: rgba(34,197,94,0.9);
+            background: rgba(22,163,74,0.25);
+            color: #bbf7d0;
+            box-shadow: 0 0 10px rgba(34,197,94,0.4);
+        }
+
+        .etat-group label.etat-manquant {
+            border-color: rgba(249,115,22,0.9);
+            background: rgba(154,52,18,0.35);
+            color: #fed7aa;
+            box-shadow: 0 0 10px rgba(249,115,22,0.45);
+        }
+
+        .etat-group label.etat-hs {
+            border-color: rgba(239,68,68,0.9);
+            background: rgba(153,27,27,0.4);
+            color: #fecaca;
+            box-shadow: 0 0 10px rgba(239,68,68,0.45);
+        }
+
         /* ========= ACTIONS ========= */
 
         .actions {
@@ -313,6 +354,33 @@
             background: #020b24;
             transform: translateY(-1px);
             box-shadow: 0 0 14px rgba(148,163,184,0.4);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--muted);
+            border: 1px solid #374151;
+            box-shadow: none;
+        }
+
+        .btn-ghost:hover {
+            background: #020617;
+            box-shadow: 0 0 10px rgba(148,163,184,0.35);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #16a34a, #22c55e, #0ea5e9);
+            color: #022c22;
+            box-shadow:
+                0 8px 18px rgba(16,185,129,0.5),
+                0 0 14px rgba(14,165,233,0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow:
+                0 10px 22px rgba(16,185,129,0.6),
+                0 0 18px rgba(14,165,233,0.5);
         }
 
         /* ========= MODAL ========= */
@@ -375,33 +443,6 @@
             gap: .6rem;
             justify-content: flex-end;
             margin-top: .4rem;
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--muted);
-            border: 1px solid #374151;
-            box-shadow: none;
-        }
-
-        .btn-ghost:hover {
-            background: #020617;
-            box-shadow: 0 0 10px rgba(148,163,184,0.35);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #16a34a, #22c55e, #0ea5e9);
-            color: #022c22;
-            box-shadow:
-                0 8px 18px rgba(16,185,129,0.5),
-                0 0 14px rgba(14,165,233,0.35);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow:
-                0 10px 22px rgba(16,185,129,0.6),
-                0 0 18px rgba(14,165,233,0.5);
         }
 
         /* ========= RESPONSIVE ========= */
@@ -487,7 +528,6 @@
 
 <main>
     <form id="inventaireForm">
-        <!-- BANDEAU VTU AVEC DÉGRADÉ VERT / BLEU -->
         <div class="form-header">
             <div class="form-header-title">VTU – Vérification</div>
             <div class="form-header-sub">Contrôle journalier du matériel et observations</div>
@@ -528,10 +568,9 @@
     </form>
 </main>
 
-<!-- MODAL DE CONFIRMATION -->
 <div class="modal-backdrop" id="confirmModal">
-    <div class="modal">
-        <div class="modal-title">Confirmer l’export du contrôle</div>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-title" id="modalTitle">Confirmer l’export du contrôle</div>
         <div class="modal-text">
             En validant, l’application va :
         </div>
@@ -593,6 +632,39 @@
                     </div>
                 </div>
             `);
+        });
+    }
+
+    function setupEtatListeners() {
+        const container = document.getElementById("itemsContainer");
+
+        container.addEventListener("change", (e) => {
+            if (e.target.type !== "radio") return;
+
+            const row = e.target.closest(".item-row");
+            if (!row) return;
+
+            row.classList.remove("state-OK", "state-Manquant", "state-HS");
+            row.querySelectorAll(".etat-group label").forEach(label => {
+                label.classList.remove("etat-ok", "etat-manquant", "etat-hs");
+            });
+
+            const value = e.target.value;
+
+            if (value === "OK") {
+                row.classList.add("state-OK");
+            } else if (value === "Manquant") {
+                row.classList.add("state-Manquant");
+            } else if (value === "HS") {
+                row.classList.add("state-HS");
+            }
+
+            const label = e.target.closest("label");
+            if (label) {
+                if (value === "OK") label.classList.add("etat-ok");
+                if (value === "Manquant") label.classList.add("etat-manquant");
+                if (value === "HS") label.classList.add("etat-hs");
+            }
         });
     }
 
@@ -670,8 +742,6 @@ Cordialement.`
         pendingRecord = null;
     }
 
-    // ====== EVENTS ======
-
     document.getElementById("inventaireForm").addEventListener("submit", e => {
         e.preventDefault();
 
@@ -687,22 +757,27 @@ Cordialement.`
             return;
         }
 
-        // Ouvre la popup au lieu du confirm()
         openModal(record);
     });
 
     document.getElementById("resetFormBtn").addEventListener("click", () => {
         if (confirm("Réinitialiser le formulaire ?")) {
-            document.getElementById("inventaireForm").reset();
+            const form = document.getElementById("inventaireForm");
+            form.reset();
+
+            document.querySelectorAll(".item-row").forEach(row => {
+                row.classList.remove("state-OK", "state-Manquant", "state-HS");
+                row.querySelectorAll(".etat-group label").forEach(label => {
+                    label.classList.remove("etat-ok", "etat-manquant", "etat-hs");
+                });
+            });
         }
     });
 
-    // Bouton retour de la modal
     document.getElementById("modalCancel").addEventListener("click", () => {
         closeModal();
     });
 
-    // Bouton OK de la modal
     document.getElementById("modalConfirm").addEventListener("click", () => {
         if (!pendingRecord) return;
         exportCSV(pendingRecord);
@@ -710,15 +785,21 @@ Cordialement.`
         closeModal();
     });
 
-    // Fermer si on clique en dehors de la fenêtre
     document.getElementById("confirmModal").addEventListener("click", (e) => {
         if (e.target.id === "confirmModal") {
             closeModal();
         }
     });
 
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            closeModal();
+        }
+    });
+
     (function init() {
         renderItemRows();
+        setupEtatListeners();
         const today = new Date().toISOString().slice(0, 10);
         document.getElementById("date").value = today;
     })();
