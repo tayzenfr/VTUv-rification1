@@ -1,922 +1,729 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Formulaire vérification VTU</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --bg: #020617;
-            --bg-soft: #020818;
-            --border: #1f2937;
-            --accent: #22c55e;
-            --accent-strong: #16a34a;
-            --accent-blue: #0ea5e9;
-            --text: #e5e7eb;
-            --muted: #9ca3af;
-            --radius-lg: 18px;
-            --radius-md: 12px;
-            --radius-pill: 999px;
-            --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.6);
-        }
-
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background:
-                radial-gradient(circle at top left, rgba(34,197,94,0.12), transparent 55%),
-                radial-gradient(circle at bottom right, rgba(14,165,233,0.14), transparent 55%),
-                #020617;
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        /* ========= HEADER ========= */
-
-        header {
-            position: relative;
-            background: linear-gradient(135deg, #16a34a, #22c55e, #0ea5e9);
-            padding: 1.8rem 1rem 2.3rem;
-            text-align: center;
-            color: white;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: "";
-            position: absolute;
-            inset: -40%;
-            background:
-                radial-gradient(circle at 10% 0%, rgba(34,197,94,0.4), transparent 55%),
-                radial-gradient(circle at 90% 100%, rgba(56,189,248,0.35), transparent 55%);
-            opacity: 0.8;
-            filter: blur(22px);
-            animation: headerGlow 18s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-
-        header * {
-            position: relative;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: clamp(1.5rem, 2.4vw, 2rem);
-            letter-spacing: .06em;
-            text-transform: uppercase;
-            text-shadow: 0 6px 20px rgba(0,0,0,0.55);
-        }
-
-        .header-sub {
-            margin-top: .4rem;
-            font-size: .9rem;
-            opacity: .95;
-        }
-
-        /* ========= MAIN / FORM ========= */
-
-        main {
-            max-width: 1020px;
-            margin: -1.4rem auto 3rem;
-            padding: 0 .9rem 2.4rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        form {
-            background: rgba(2, 6, 23, 0.98);
-            border-radius: var(--radius-lg);
-            padding: 1.4rem 1.3rem 1.4rem;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid rgba(148,163,184,0.18);
-            backdrop-filter: blur(12px);
-            animation: cardIn .5s cubic-bezier(.16,1,.3,1);
-        }
-
-        /* ========= BANDEAU VTU ========= */
-
-        .form-header {
-            background: linear-gradient(120deg, #16a34a, #22c55e, #0ea5e9);
-            border-radius: var(--radius-md);
-            padding: .75rem .95rem;
-            margin-bottom: 1.1rem;
-            display: flex;
-            flex-direction: column;
-            gap: .18rem;
-            color: #ecfdf5;
-            box-shadow: 0 10px 25px rgba(15,118,110,0.45);
-        }
-
-        .form-header-title {
-            font-size: .95rem;
-            font-weight: 700;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-        }
-
-        .form-header-sub {
-            font-size: .82rem;
-            opacity: .95;
-        }
-
-        /* ========= FIELDSETS ========= */
-
-        fieldset {
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
-            margin-bottom: 1.1rem;
-            padding: 1rem .95rem .95rem;
-            background: rgba(15,23,42,0.95);
-        }
-
-        legend {
-            padding: 0 .45rem;
-            font-weight: 600;
-            color: var(--accent);
-            font-size: .9rem;
-            text-transform: uppercase;
-            letter-spacing: .08em;
-        }
-
-        .legend-help {
-            font-size: .85rem;
-            color: var(--muted);
-            margin-top: .25rem;
-        }
-
-        /* ========= RÉSUMÉ STATS ========= */
-
-        .resume-stats {
-            margin-top: .5rem;
-            margin-bottom: .7rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: .4rem;
-        }
-
-        .resume-tag {
-            border-radius: var(--radius-pill);
-            padding: .3rem .7rem;
-            font-size: .78rem;
-            border: 1px solid #1f2937;
-            background: #020617;
-            display: inline-flex;
-            align-items: center;
-            gap: .3rem;
-        }
-
-        .resume-tag span.label {
-            color: var(--muted);
-        }
-
-        .resume-tag span.value {
-            font-weight: 600;
-        }
-
-        .resume-tag.ok {
-            border-color: rgba(34,197,94,0.7);
-        }
-        .resume-tag.manquant {
-            border-color: rgba(249,115,22,0.7);
-        }
-        .resume-tag.hs {
-            border-color: rgba(239,68,68,0.7);
-        }
-        .resume-tag.non {
-            border-color: rgba(148,163,184,0.7);
-        }
-
-        /* ========= GRID ========= */
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: .9rem;
-        }
-
-        /* ========= LABELS / INPUTS ========= */
-
-        label {
-            font-size: .85rem;
-            display: block;
-            margin-bottom: .28rem;
-            color: var(--muted);
-        }
-
-        input[type="text"],
-        input[type="date"],
-        textarea {
-            width: 100%;
-            padding: .65rem .75rem;
-            border-radius: .55rem;
-            border: 1px solid #1f2937;
-            background: #020617;
-            color: var(--text);
-            font-size: .9rem;
-            transition: border-color .16s ease, box-shadow .16s ease, background .16s ease,
-                        transform .08s ease;
-        }
-
-        textarea {
-            min-height: 80px;
-            resize: vertical;
-        }
-
-        input:focus,
-        textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px rgba(34,197,94,0.5), 0 0 12px rgba(34,197,94,0.25);
-            background: #02041b;
-            transform: translateY(-1px);
-        }
-
-        /* ========= ITEMS ========= */
-
-        .item-row {
-            display: grid;
-            grid-template-columns: minmax(0, 1.7fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
-            gap: .75rem;
-            align-items: center;
-            padding: .55rem .65rem;
-            border-radius: .75rem;
-            background: #020617;
-            border: 1px solid #0b1220;
-            margin-bottom: .45rem;
-            transition: border-color .16s ease, background .16s ease, transform .08s ease,
-                        box-shadow .12s ease;
-        }
-
-        .item-row:hover {
-            border-color: rgba(34,197,94,0.5);
-            background: #020b1a;
-            transform: translateY(-1px);
-            box-shadow: 0 0 16px rgba(34,197,94,0.25);
-        }
-
-        .item-name {
-            font-size: .9rem;
-            font-weight: 500;
-        }
-
-        .etat-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .35rem;
-            font-size: .8rem;
-        }
-
-        .etat-group label {
-            margin-bottom: 0;
-            display: inline-flex;
-            align-items: center;
-            gap: .3rem;
-            padding: .38rem .85rem;
-            border-radius: var(--radius-pill);
-            border: 1px solid #334155;
-            background: #020617;
-            cursor: pointer;
-            transition: background .14s ease, border-color .14s ease, transform .08s ease,
-                        box-shadow .12s ease;
-        }
-
-        .etat-group label:hover {
-            border-color: rgba(148,163,184,0.85);
-            background: #020a18;
-            box-shadow: 0 0 10px rgba(148,163,184,0.35);
-        }
-
-        .etat-group input[type="radio"] {
-            transform: scale(1.15);
-        }
-
-        .small-input {
-            font-size: .8rem;
-            padding: .45rem .6rem;
-            border-radius: .5rem;
-            border: 1px solid #1f2937;
-            background: #020617;
-            color: var(--text);
-        }
-
-        /* ========= ÉTATS COLORÉS ========= */
-
-        .item-row.state-OK {
-            border-color: rgba(34,197,94,0.8);
-            background: #022c22;
-            box-shadow: 0 0 16px rgba(34,197,94,0.35);
-        }
-
-        .item-row.state-Manquant {
-            border-color: #f97316;
-            background: #1f1305;
-            box-shadow: 0 0 16px rgba(249,115,22,0.35);
-        }
-
-        .item-row.state-HS {
-            border-color: #ef4444;
-            background: #2b0a0a;
-            box-shadow: 0 0 16px rgba(239,68,68,0.35);
-        }
-
-        .etat-group label.etat-ok {
-            border-color: rgba(34,197,94,0.9);
-            background: rgba(22,163,74,0.25);
-            color: #bbf7d0;
-            box-shadow: 0 0 10px rgba(34,197,94,0.4);
-        }
-
-        .etat-group label.etat-manquant {
-            border-color: rgba(249,115,22,0.9);
-            background: rgba(154,52,18,0.35);
-            color: #fed7aa;
-            box-shadow: 0 0 10px rgba(249,115,22,0.45);
-        }
-
-        .etat-group label.etat-hs {
-            border-color: rgba(239,68,68,0.9);
-            background: rgba(153,27,27,0.4);
-            color: #fecaca;
-            box-shadow: 0 0 10px rgba(239,68,68,0.45);
-        }
-
-        /* ========= ACTIONS ========= */
-
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .75rem;
-            margin-top: 1rem;
-        }
-
-        button {
-            border: none;
-            border-radius: .7rem;
-            padding: .78rem 1.3rem;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: .9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: .45rem;
-            transition: transform .08s ease, box-shadow .14s ease, background .14s ease,
-                        filter .14s ease;
-        }
-
-        button[type="submit"] {
-            background: linear-gradient(135deg, #16a34a, #22c55e, #0ea5e9);
-            color: #022c22;
-            box-shadow:
-                0 10px 22px rgba(16,185,129,0.5),
-                0 0 16px rgba(14,165,233,0.35);
-        }
-
-        button[type="submit"]:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.03);
-            box-shadow:
-                0 14px 28px rgba(16,185,129,0.6),
-                0 0 18px rgba(14,165,233,0.45);
-        }
-
-        button.secondary {
-            background: #020617;
-            color: var(--text);
-            border: 1px solid #1f2937;
-            box-shadow: 0 0 10px rgba(15,23,42,0.6);
-        }
-
-        button.secondary:hover {
-            background: #020b24;
-            transform: translateY(-1px);
-            box-shadow: 0 0 14px rgba(148,163,184,0.4);
-        }
-
-        .btn-ghost {
-            background: transparent;
-            color: var(--muted);
-            border: 1px solid #374151;
-            box-shadow: none;
-        }
-
-        .btn-ghost:hover {
-            background: #020617;
-            box-shadow: 0 0 10px rgba(148,163,184,0.35);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #16a34a, #22c55e, #0ea5e9);
-            color: #022c22;
-            box-shadow:
-                0 8px 18px rgba(16,185,129,0.5),
-                0 0 14px rgba(14,165,233,0.35);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow:
-                0 10px 22px rgba(16,185,129,0.6),
-                0 0 18px rgba(14,165,233,0.5);
-        }
-
-        /* ========= MODAL ========= */
-
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            background: rgba(15,23,42,0.75);
-            backdrop-filter: blur(6px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .18s ease;
-            z-index: 50;
-        }
-
-        .modal-backdrop.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal {
-            background: #020617;
-            border-radius: 16px;
-            padding: 1.2rem 1.1rem 1rem;
-            max-width: 420px;
-            width: calc(100% - 2.4rem);
-            border: 1px solid rgba(148,163,184,0.3);
-            box-shadow: 0 22px 40px rgba(0,0,0,0.7);
-            animation: modalIn .18s ease-out;
-        }
-
-        .modal-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: .5rem;
-        }
-
-        .modal-text {
-            font-size: .85rem;
-            color: var(--muted);
-            margin-bottom: .7rem;
-        }
-
-        .modal-list {
-            font-size: .82rem;
-            color: var(--muted);
-            margin-left: 1rem;
-            margin-bottom: .8rem;
-        }
-
-        .modal-list li {
-            margin-bottom: .25rem;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: .6rem;
-            justify-content: flex-end;
-            margin-top: .4rem;
-        }
-
-        /* ========= RESPONSIVE ========= */
-
-        @media (max-width: 768px) {
-            body {
-                font-size: 15px;
-            }
-            main {
-                padding-inline: .7rem;
-            }
-            form {
-                padding: 1.2rem 1rem 1.3rem;
-                border-radius: 16px;
-            }
-            .item-row {
-                grid-template-columns: 1fr;
-                padding: .6rem .65rem;
-            }
-            .actions {
-                flex-direction: column;
-            }
-            button {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 480px) {
-            header {
-                padding-inline: .8rem;
-            }
-            .header-sub {
-                font-size: .82rem;
-            }
-            .form-header {
-                padding: .65rem .75rem;
-            }
-            .form-header-title {
-                font-size: .9rem;
-            }
-            .form-header-sub {
-                font-size: .78rem;
-            }
-        }
-
-        /* ========= ANIMATIONS ========= */
-
-        @keyframes cardIn {
-            from {
-                opacity: 0;
-                transform: translateY(12px) scale(.985);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        @keyframes headerGlow {
-            from {
-                transform: translate3d(-10px, 5px, 0) scale(1.01);
-            }
-            to {
-                transform: translate3d(10px, -5px, 0) scale(1.05);
-            }
-        }
-
-        @keyframes modalIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px) scale(.97);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Formulaire vérification VTU</title>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root{
+      --bg0:#020617;
+      --bg1:#050b1c;
+
+      --panel: rgba(255,255,255,0.07);
+      --stroke: rgba(255,255,255,0.12);
+
+      --text:#eef2ff;
+      --muted: rgba(238,242,255,0.74);
+
+      /* Couleurs + glow plus visibles */
+      --ok:#22c55e;
+      --warn:#fb923c;  /* plus visible que #f97316 */
+      --bad:#ff4d6d;   /* rouge/rose plus “flashy” */
+      --accent:#38bdf8;
+
+      --glow-ok: 0 0 16px rgba(34,197,94,.35), 0 0 34px rgba(34,197,94,.18);
+      --glow-warn: 0 0 16px rgba(251,146,60,.35), 0 0 34px rgba(251,146,60,.18);
+      --glow-bad: 0 0 16px rgba(255,77,109,.35), 0 0 34px rgba(255,77,109,.18);
+      --glow-accent: 0 0 16px rgba(56,189,248,.30), 0 0 34px rgba(56,189,248,.16);
+
+      --r-lg: 20px;
+      --r-md: 16px;
+      --pill: 999px;
+
+      --shadow: 0 22px 60px rgba(0,0,0,.60);
+      --shadow2: 0 10px 24px rgba(0,0,0,.45);
+
+      --blur: blur(14px) saturate(150%);
+    }
+
+    body{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(900px 600px at 15% 10%, rgba(56,189,248,.20), transparent 55%),
+        radial-gradient(900px 600px at 85% 80%, rgba(34,197,94,.16), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg0) 40%, #020617);
+      background-attachment: fixed;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    header{
+      padding: 18px 14px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before{
+      content:"";
+      position:absolute; inset:-30%;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.10), transparent 55%),
+        radial-gradient(circle at 70% 70%, rgba(255,255,255,.06), transparent 60%),
+        radial-gradient(circle at 20% 80%, rgba(56,189,248,.18), transparent 55%),
+        radial-gradient(circle at 85% 20%, rgba(34,197,94,.16), transparent 55%);
+      filter: blur(22px);
+      opacity: .9;
+      pointer-events:none;
+      animation: slowFloat 14s ease-in-out infinite alternate;
+    }
+    h1{
+      position: relative;
+      text-align:center;
+      font-size: clamp(1.25rem, 3.8vw, 1.7rem);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      text-shadow: 0 10px 24px rgba(0,0,0,.55);
+      margin-top: 4px;
+    }
+    .header-sub{
+      position: relative;
+      text-align:center;
+      margin-top: 6px;
+      font-size: .92rem;
+      color: rgba(255,255,255,.82);
+    }
+
+    main{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 12px 96px;
+    }
+
+    .card{
+      background: linear-gradient(180deg, var(--panel), rgba(255,255,255,0.04));
+      border: 1px solid var(--stroke);
+      border-radius: var(--r-lg);
+      backdrop-filter: var(--blur);
+      -webkit-backdrop-filter: var(--blur);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-40% -20%;
+      background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.10) 50%, transparent 65%);
+      transform: rotate(10deg);
+      opacity: .30;
+      pointer-events:none;
+      animation: sheen 10s ease-in-out infinite;
+    }
+
+    .pad{ padding: 14px; position: relative; }
+
+    .top-strip{
+      border-radius: var(--r-md);
+      border: 1px solid var(--stroke);
+      background: linear-gradient(135deg, rgba(56,189,248,.22), rgba(34,197,94,.14));
+      padding: 12px 12px;
+      box-shadow: var(--shadow2);
+    }
+    .top-strip .t1{
+      font-weight: 900;
+      letter-spacing: .10em;
+      text-transform: uppercase;
+      font-size: .92rem;
+    }
+    .top-strip .t2{
+      margin-top: 2px;
+      color: rgba(255,255,255,.80);
+      font-size: .84rem;
+    }
+
+    fieldset{
+      margin-top: 12px;
+      border: 1px solid var(--stroke);
+      border-radius: var(--r-md);
+      background: rgba(255,255,255,0.03);
+      padding: 12px;
+    }
+    legend{
+      padding: 0 8px;
+      color: rgba(255,255,255,.90);
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-size: .82rem;
+    }
+    .help{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: .86rem;
+      line-height: 1.35;
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    label{
+      display:block;
+      color: var(--muted);
+      font-size: .86rem;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], input[type="date"], textarea{
+      width:100%;
+      background: rgba(0,0,0,.24);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 12px 12px; /* plus “touch” friendly */
+      color: var(--text);
+      font-size: .98rem;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease, transform .08s ease, background .15s ease;
+    }
+    textarea{ min-height: 106px; resize: vertical; }
+
+    input:focus, textarea:focus{
+      border-color: rgba(56,189,248,.55);
+      box-shadow: 0 0 0 3px rgba(56,189,248,.16), var(--glow-accent);
+      transform: translateY(-1px);
+      background: rgba(0,0,0,.28);
+    }
+
+    /* Stats (on garde) */
+    .stats{
+      margin-top: 10px;
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .tag{
+      border-radius: var(--pill);
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      padding: 8px 10px;
+      font-size: .82rem;
+      color: rgba(255,255,255,.90);
+      display:inline-flex;
+      align-items:center;
+      gap: 6px;
+    }
+    .tag .k{ color: rgba(238,242,255,0.62); }
+    .tag .v{ font-weight: 950; }
+    .tag.ok{ border-color: rgba(34,197,94,.45); box-shadow: var(--glow-ok); }
+    .tag.warn{ border-color: rgba(251,146,60,.48); box-shadow: var(--glow-warn); }
+    .tag.bad{ border-color: rgba(255,77,109,.50); box-shadow: var(--glow-bad); }
+    .tag.nr{ border-color: rgba(148,163,184,.34); }
+
+    #itemsContainer{ margin-top: 10px; }
+
+    .row{
+      border-radius: var(--r-md);
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      padding: 12px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+      transition: border-color .15s ease, transform .12s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    .name{
+      font-weight: 950;
+      font-size: .98rem;
+      letter-spacing: .01em;
+    }
+
+    .pills{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 12px 14px; /* plus gros pour téléphone */
+      border-radius: var(--pill);
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.04);
+      cursor: pointer;
+      user-select:none;
+      font-weight: 950;
+      font-size: .90rem;
+      transition: border-color .15s ease, background .15s ease, transform .08s ease, box-shadow .15s ease;
+    }
+    .pill:active{ transform: scale(.98); }
+    .pill input{ transform: scale(1.12); }
+
+    /* sélection + glow fort */
+    .pill.sel-ok{
+      border-color: rgba(34,197,94,.70);
+      background: rgba(34,197,94,.14);
+      box-shadow: var(--glow-ok);
+    }
+    .pill.sel-warn{
+      border-color: rgba(251,146,60,.76);
+      background: rgba(251,146,60,.15);
+      box-shadow: var(--glow-warn);
+    }
+    .pill.sel-bad{
+      border-color: rgba(255,77,109,.80);
+      background: rgba(255,77,109,.14);
+      box-shadow: var(--glow-bad);
+    }
+
+    /* Contour de la ligne selon état (plus visible) */
+    .row.st-ok{
+      border-color: rgba(34,197,94,.55);
+      background: rgba(34,197,94,.06);
+      box-shadow: var(--glow-ok);
+    }
+    .row.st-warn{
+      border-color: rgba(251,146,60,.58);
+      background: rgba(251,146,60,.06);
+      box-shadow: var(--glow-warn);
+    }
+    .row.st-bad{
+      border-color: rgba(255,77,109,.62);
+      background: rgba(255,77,109,.06);
+      box-shadow: var(--glow-bad);
+    }
+
+    .rem{
+      background: rgba(0,0,0,.24);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 12px 12px;
+      font-size: .95rem;
+      color: rgba(255,255,255,.92);
+    }
+    .rem:focus{
+      border-color: rgba(56,189,248,.55);
+      box-shadow: 0 0 0 3px rgba(56,189,248,.16), var(--glow-accent);
+    }
+
+    /* Actions sticky */
+    .actionsSticky{
+      position: fixed;
+      left: 0; right: 0;
+      bottom: 0;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: linear-gradient(180deg, rgba(2,6,23,0.00), rgba(2,6,23,0.70) 20%, rgba(2,6,23,0.86));
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255,255,255,.10);
+      z-index: 40;
+    }
+    .actionsBar{
+      max-width: 980px;
+      margin: 0 auto;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    button{
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 16px;
+      padding: 13px 12px;
+      font-weight: 950;
+      font-size: .95rem;
+      cursor:pointer;
+      transition: transform .08s ease, filter .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    button:active{ transform: scale(.98); }
+
+    .btnMain{
+      background: linear-gradient(135deg, rgba(56,189,248,.30), rgba(34,197,94,.18));
+      color: rgba(255,255,255,.95);
+      border-color: rgba(255,255,255,.20);
+      box-shadow: var(--glow-accent);
+    }
+    .btnMain:hover{ filter: brightness(1.05); }
+
+    .btnGhost{
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.92);
+    }
+    .btnGhost:hover{ border-color: rgba(255,255,255,.20); }
+
+    /* Modal */
+    .backdrop{
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 14px;
+      opacity: 0;
+      pointer-events:none;
+      transition: opacity .18s ease;
+      z-index: 60;
+    }
+    .backdrop.show{ opacity:1; pointer-events:auto; }
+    .modal{
+      width: min(440px, 100%);
+      border-radius: var(--r-lg);
+      border: 1px solid rgba(255,255,255,.16);
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.05));
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .mTitle{ font-weight: 950; font-size: 1.0rem; }
+    .mText{ margin-top: 8px; color: var(--muted); font-size: .92rem; line-height: 1.35; }
+    .mList{ margin-top: 10px; margin-left: 16px; color: var(--muted); font-size: .90rem; }
+    .mList li{ margin-bottom: 6px; }
+    .mStats{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      border-radius: var(--r-md);
+      color: rgba(255,255,255,.90);
+      font-size: .92rem;
+      line-height: 1.35;
+    }
+    .mActions{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (min-width: 900px){
+      main{ padding-bottom: 26px; }
+      .actionsSticky{ position: static; background: transparent; border-top: 0; padding: 0; }
+      .actionsBar{ grid-template-columns: 1fr 1fr; }
+    }
+
+    @keyframes slowFloat{
+      from{ transform: translate(-8px, 6px) scale(1.02); }
+      to{ transform: translate(10px, -6px) scale(1.05); }
+    }
+    @keyframes sheen{
+      0%{ transform: translateX(-40%) rotate(10deg); opacity:.0; }
+      25%{ opacity:.30; }
+      50%{ transform: translateX(40%) rotate(10deg); opacity:.0; }
+      100%{ opacity:.0; }
+    }
+  </style>
 </head>
-<body>
-<header>
-    <h1>Formulaire vérification VTU</h1>
-    <p class="header-sub">Contrôle rapide et propre du matériel du VTU</p>
-</header>
 
-<main>
-    <form id="inventaireForm">
-        <div class="form-header">
-            <div class="form-header-title">VTU – Vérification</div>
-            <div class="form-header-sub">Contrôle journalier du matériel et observations</div>
+<body>
+  <header>
+    <h1>Formulaire vérification VTU</h1>
+    <p class="header-sub">Contrôle rapide du matériel (mobile)</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="pad">
+        <div class="top-strip">
+          <div class="t1">VTU – Vérification</div>
+          <div class="t2">Cocher l’état + remarque si besoin</div>
         </div>
 
-        <fieldset>
+        <form id="inventaireForm" autocomplete="off">
+          <fieldset>
             <legend>Informations générales</legend>
-            <div class="grid-2">
-                <div>
-                    <label for="date">Date du contrôle</label>
-                    <input type="date" id="date" name="date" required>
-                </div>
-                <div>
-                    <label for="conducteur">NOM, prénom</label>
-                    <input type="text" id="conducteur" name="conducteur" placeholder="Nom, prénom" required>
-                </div>
+            <div class="grid2">
+              <div>
+                <label for="date">Date du contrôle</label>
+                <input type="date" id="date" name="date" required />
+              </div>
+              <div>
+                <label for="conducteur">NOM, prénom</label>
+                <input type="text" id="conducteur" name="conducteur" placeholder="Nom, prénom" required />
+              </div>
             </div>
-        </fieldset>
+          </fieldset>
 
-        <fieldset>
+          <fieldset>
             <legend>Matériel VTU</legend>
-            <p class="legend-help">
-                Pour chaque matériel : <strong>Présent</strong>, <strong>Manquant</strong> ou <strong>HS</strong>, avec remarque si besoin.
-            </p>
+            <div class="help">État : <b>Présent</b>, <b>Manquant</b> ou <b>HS</b>. Remarque si nécessaire.</div>
 
-            <div class="resume-stats">
-                <div class="resume-tag total">
-                    <span class="label">Total :</span>
-                    <span class="value" id="statTotal">0</span>
-                </div>
-                <div class="resume-tag ok">
-                    <span class="label">OK :</span>
-                    <span class="value" id="statOK">0</span>
-                </div>
-                <div class="resume-tag manquant">
-                    <span class="label">Manquant :</span>
-                    <span class="value" id="statManquant">0</span>
-                </div>
-                <div class="resume-tag hs">
-                    <span class="label">HS :</span>
-                    <span class="value" id="statHS">0</span>
-                </div>
-                <div class="resume-tag non">
-                    <span class="label">Non renseigné :</span>
-                    <span class="value" id="statNon">0</span>
-                </div>
+            <div class="stats">
+              <div class="tag"><span class="k">Total</span> <span class="v" id="statTotal">0</span></div>
+              <div class="tag ok"><span class="k">OK</span> <span class="v" id="statOK">0</span></div>
+              <div class="tag warn"><span class="k">Manquant</span> <span class="v" id="statManquant">0</span></div>
+              <div class="tag bad"><span class="k">HS</span> <span class="v" id="statHS">0</span></div>
+              <div class="tag nr"><span class="k">Non renseigné</span> <span class="v" id="statNon">0</span></div>
             </div>
 
             <div id="itemsContainer"></div>
-        </fieldset>
+          </fieldset>
 
-        <fieldset>
+          <fieldset>
             <legend>Observation générale</legend>
             <label for="observations">Observation générale</label>
             <textarea id="observations" name="observations" placeholder="RAS, matériel manquant, problème particulier…"></textarea>
-        </fieldset>
-
-        <div class="actions">
-            <button type="submit">📤 Exporter le contrôle & ouvrir l’e-mail</button>
-            <button type="button" class="secondary" id="resetFormBtn">🔁 Réinitialiser le formulaire</button>
-        </div>
-    </form>
-</main>
-
-<div class="modal-backdrop" id="confirmModal">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <div class="modal-title" id="modalTitle">Confirmer l’export du contrôle</div>
-        <div class="modal-text">
-            En validant, l’application va :
-        </div>
-        <ul class="modal-list">
-            <li>Télécharger un fichier <strong>CSV</strong> du contrôle VTU sur cet appareil ;</li>
-            <li>Ouvrir ta messagerie (ex : Gmail) vers la personne en charge ;</li>
-            <li>Tu devras ensuite <strong>joindre le fichier CSV</strong> avant d’envoyer l’e-mail.</li>
-        </ul>
-        <div class="modal-text">
-            Veux-tu continuer ?
-        </div>
-        <div class="modal-actions">
-            <button type="button" class="btn-ghost" id="modalCancel">Retour</button>
-            <button type="button" class="btn-primary" id="modalConfirm">OK, continuer</button>
-        </div>
+          </fieldset>
+        </form>
+      </div>
     </div>
-</div>
+  </main>
 
-<script>
+  <div class="actionsSticky">
+    <div class="actionsBar">
+      <button class="btnMain" type="button" id="exportBtn">📤 Exporter & ouvrir l’e-mail</button>
+      <button class="btnGhost" type="button" id="resetBtn">🔁 Réinitialiser</button>
+    </div>
+  </div>
+
+  <div class="backdrop" id="confirmModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+      <div class="mTitle" id="mTitle">Confirmer l’export du contrôle</div>
+      <div class="mText">L’application va :</div>
+      <ul class="mList">
+        <li>Télécharger un fichier <b>CSV</b> sur cet appareil ;</li>
+        <li>Ouvrir la messagerie vers la personne en charge ;</li>
+        <li>Joindre le CSV puis envoyer.</li>
+      </ul>
+      <div class="mStats" id="modalStats"></div>
+      <div class="mActions">
+        <button class="btnGhost" type="button" id="modalCancel">Retour</button>
+        <button class="btnMain" type="button" id="modalConfirm">OK, continuer</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
     const EMAIL_TO = "charpentreaupascal@gmail.com";
 
     const MATERIAL_ITEMS = [
-        "Aspirateur à eau et chariot","Bidon carburant x4","Paire de botte","Commande","Cônes x2",
-        "Cuissardes x4","Dagueuse","Émulseur x4","Lit picot","Lot ANIM","Moto pompe thermique",
-        "Groupe électrogène","Pompe électrique","Poubelle","Projecteur portable x2",
-        "Raclettes x2 grande et moyenne","Tuyaux diamètre 70 x10","Tuyaux diamètre 45 x4",
-        "Tuyaux diamètre 100","Tuyaux Barcelona x5","Tuyaux d'aspiration x4","Caisses d'épuisement",
-        "Polycose","Bouteille plastique","Flotteur","Crépine","Clé de poteau","Lance 45 x2",
-        "Réduction 70/45","Pioche","Clé de barrage","Sac absorbant","Cales x2","Tuyaux LDT x3",
-        "Une masse","Raccord de réduction 70/40","LSPCC + commande","Rallonge électrique",
-        "Raccord 110/70","Cage à chat","Couverture","Caisse en polystyrène","Pince reptile",
-        "Crochets x2","Échelle télescopique"
+      "Aspirateur à eau et chariot","Bidon carburant x4","Paire de botte","Commande","Cônes x2",
+      "Cuissardes x4","Dagueuse","Émulseur x4","Lit picot","Lot ANIM","Moto pompe thermique",
+      "Groupe électrogène","Pompe électrique","Poubelle","Projecteur portable x2",
+      "Raclettes x2 grande et moyenne","Tuyaux diamètre 70 x10","Tuyaux diamètre 45 x4",
+      "Tuyaux diamètre 100","Tuyaux Barcelona x5","Tuyaux d'aspiration x4","Caisses d'épuisement",
+      "Polycose","Bouteille plastique","Flotteur","Crépine","Clé de poteau","Lance 45 x2",
+      "Réduction 70/45","Pioche","Clé de barrage","Sac absorbant","Cales x2","Tuyaux LDT x3",
+      "Une masse","Raccord de réduction 70/40","LSPCC + commande","Rallonge électrique",
+      "Raccord 110/70","Cage à chat","Couverture","Caisse en polystyrène","Pince reptile",
+      "Crochets x2","Échelle télescopique"
     ];
 
     let pendingRecord = null;
+    const $ = (s) => document.querySelector(s);
 
-    function slug(str) {
-        return str.toLowerCase()
-            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]+/g, "_")
-            .replace(/^_+|_+$/g, "");
+    function slug(str){
+      return str.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "");
     }
 
-    function renderItemRows() {
-        const container = document.getElementById("itemsContainer");
-        container.innerHTML = "";
-        MATERIAL_ITEMS.forEach(label => {
-            const id = "item_" + slug(label);
-            container.insertAdjacentHTML("beforeend", `
-                <div class="item-row" data-item="${label}" data-group="${id}">
-                    <div class="item-name">${label}</div>
-                    <div class="etat-group">
-                        <label><input type="radio" name="${id}" value="OK"> Présent</label>
-                        <label><input type="radio" name="${id}" value="Manquant"> Manquant</label>
-                        <label><input type="radio" name="${id}" value="HS"> HS</label>
-                    </div>
-                    <div>
-                        <input class="small-input" type="text" placeholder="Observation (facultatif)">
-                    </div>
-                </div>
-            `);
-        });
-        updateStatsFromDOM();
+    function renderItems(){
+      const container = $("#itemsContainer");
+      container.innerHTML = "";
+
+      MATERIAL_ITEMS.forEach(label => {
+        const id = "item_" + slug(label);
+        const row = document.createElement("div");
+        row.className = "row";
+        row.dataset.item = label;
+        row.dataset.group = id;
+
+        row.innerHTML = `
+          <div class="name">${label}</div>
+          <div class="pills">
+            <label class="pill"><input type="radio" name="${id}" value="OK"> Présent</label>
+            <label class="pill"><input type="radio" name="${id}" value="Manquant"> Manquant</label>
+            <label class="pill"><input type="radio" name="${id}" value="HS"> HS</label>
+          </div>
+          <input class="rem" type="text" placeholder="Remarque (facultatif)" />
+        `;
+
+        container.appendChild(row);
+      });
+
+      updateStatsFromDOM();
     }
 
-    function setupEtatListeners() {
-        const container = document.getElementById("itemsContainer");
-
-        container.addEventListener("change", (e) => {
-            if (e.target.type !== "radio") return;
-
-            const row = e.target.closest(".item-row");
-            if (!row) return;
-
-            row.classList.remove("state-OK", "state-Manquant", "state-HS");
-            row.querySelectorAll(".etat-group label").forEach(label => {
-                label.classList.remove("etat-ok", "etat-manquant", "etat-hs");
-            });
-
-            const value = e.target.value;
-
-            if (value === "OK") {
-                row.classList.add("state-OK");
-            } else if (value === "Manquant") {
-                row.classList.add("state-Manquant");
-            } else if (value === "HS") {
-                row.classList.add("state-HS");
-            }
-
-            const label = e.target.closest("label");
-            if (label) {
-                if (value === "OK") label.classList.add("etat-ok");
-                if (value === "Manquant") label.classList.add("etat-manquant");
-                if (value === "HS") label.classList.add("etat-hs");
-            }
-
-            updateStatsFromDOM();
-        });
+    function buildItems(){
+      const items = [];
+      document.querySelectorAll(".row").forEach(row => {
+        const item = row.dataset.item;
+        const group = row.dataset.group;
+        const checked = document.querySelector(`input[name="${group}"]:checked`);
+        const etat = checked ? checked.value : "Non renseigné";
+        const obs = row.querySelector(".rem").value.trim();
+        items.push({ item, etat, obs });
+      });
+      return items;
     }
 
-    function buildItems() {
-        const items = [];
-        document.querySelectorAll(".item-row").forEach(row => {
-            const item = row.dataset.item;
-            const group = row.dataset.group;
-            const checked = document.querySelector(`input[name="${group}"]:checked`);
-            const etat = checked ? checked.value : "Non renseigné";
-            const obs = row.querySelector("input[type=text]").value.trim();
-            items.push({ item, etat, obs });
-        });
-        return items;
+    function computeStats(items){
+      let total = items.length;
+      let ok=0, manquant=0, hs=0, non=0;
+      for (const it of items){
+        if (it.etat === "OK") ok++;
+        else if (it.etat === "Manquant") manquant++;
+        else if (it.etat === "HS") hs++;
+        else non++;
+      }
+      return { total, ok, manquant, hs, non };
     }
 
-    function computeStats(items) {
-        let total = items.length;
-        let ok = 0, manquant = 0, hs = 0, non = 0;
-        items.forEach(it => {
-            if (it.etat === "OK") ok++;
-            else if (it.etat === "Manquant") manquant++;
-            else if (it.etat === "HS") hs++;
-            else non++;
-        });
-        return { total, ok, manquant, hs, non };
+    function paintRow(row, value){
+      row.classList.remove("st-ok","st-warn","st-bad");
+      row.querySelectorAll(".pill").forEach(p => p.classList.remove("sel-ok","sel-warn","sel-bad"));
+
+      if (value === "OK") row.classList.add("st-ok");
+      if (value === "Manquant") row.classList.add("st-warn");
+      if (value === "HS") row.classList.add("st-bad");
+
+      const lab = row.querySelector(`input[value="${value}"]`)?.closest(".pill");
+      if (lab){
+        if (value === "OK") lab.classList.add("sel-ok");
+        if (value === "Manquant") lab.classList.add("sel-warn");
+        if (value === "HS") lab.classList.add("sel-bad");
+      }
     }
 
-    function updateStatsFromDOM() {
-        const items = buildItems();
-        const stats = computeStats(items);
-        document.getElementById("statTotal").textContent = stats.total;
-        document.getElementById("statOK").textContent = stats.ok;
-        document.getElementById("statManquant").textContent = stats.manquant;
-        document.getElementById("statHS").textContent = stats.hs;
-        document.getElementById("statNon").textContent = stats.non;
+    function updateStatsFromDOM(){
+      const items = buildItems();
+      const st = computeStats(items);
+
+      $("#statTotal").textContent = st.total;
+      $("#statOK").textContent = st.ok;
+      $("#statManquant").textContent = st.manquant;
+      $("#statHS").textContent = st.hs;
+      $("#statNon").textContent = st.non;
     }
 
-    function exportCSV(record) {
-        const stats = computeStats(record.items);
-        let rows = [];
+    function exportCSV(record){
+      const stats = computeStats(record.items);
 
-        // Ligne de synthèse
-        rows.push("type;date;agent;nbTotal;nbOK;nbManquant;nbHS;nbNonRenseigne;obsGenerale");
+      const rows = [];
+      rows.push("type;date;agent;nbTotal;nbOK;nbManquant;nbHS;nbNonRenseigne;obsGenerale");
+      rows.push([
+        "VTU",
+        record.date,
+        record.conducteur,
+        stats.total,
+        stats.ok,
+        stats.manquant,
+        stats.hs,
+        stats.non,
+        (record.observations || "").replace(/;/g, ",")
+      ].join(";"));
+
+      rows.push("");
+      rows.push("item;etat;remarque");
+      for (const it of record.items){
         rows.push([
-            "VTU",
-            record.date,
-            record.conducteur,
-            stats.total,
-            stats.ok,
-            stats.manquant,
-            stats.hs,
-            stats.non,
-            record.observations.replace(/;/g, ",")
+          it.item,
+          it.etat,
+          (it.obs || "").replace(/;/g, ",")
         ].join(";"));
+      }
 
-        rows.push(""); // ligne vide
+      const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const fileName = `controle_vtu_${record.date}.csv`;
 
-        // Détail par matériel
-        rows.push("item;etat;remarque");
-        record.items.forEach(it => {
-            rows.push([
-                it.item,
-                it.etat,
-                it.obs.replace(/;/g, ",")
-            ].join(";"));
-        });
-
-        const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const fileName = `controle_vtu_${record.date}.csv`;
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
     }
 
-    function openEmail(record) {
-        const subject = encodeURIComponent(`Contrôle VTU du ${record.date} – ${record.conducteur}`);
+    function openEmail(record){
+      const subject = encodeURIComponent(`Contrôle VTU du ${record.date} – ${record.conducteur}`);
 
-        const body = encodeURIComponent(
+      const body = encodeURIComponent(
 `Bonjour,
 
 Le contrôle VTU du ${record.date} a été effectué par ${record.conducteur}.
 
 ⚠️ IMPORTANT : le fichier du contrôle a été téléchargé sur cet appareil.
 Avant d'envoyer cet e-mail, veuillez :
-
-1) Cliquer sur "Joindre un fichier" dans Gmail.
-2) Sélectionner le fichier CSV nommé :
-   controle_vtu_${record.date}.csv
-3) Vérifier le contenu, puis cliquer sur "Envoyer".
+1) Joindre le fichier CSV : controle_vtu_${record.date}.csv
+2) Vérifier le contenu, puis envoyer.
 
 Observation générale :
 ${record.observations || "RAS"}
 
 Cordialement.`
-        );
+      );
 
-        window.location.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
     }
 
-    function openModal(record) {
-        pendingRecord = record;
-        document.getElementById("confirmModal").classList.add("show");
+    function openModal(record){
+      pendingRecord = record;
+      const st = computeStats(record.items);
+      $("#modalStats").textContent =
+        `Récap : Total ${st.total} | OK ${st.ok} • Manquant ${st.manquant} • HS ${st.hs} • Non renseigné ${st.non}`;
+      $("#confirmModal").classList.add("show");
     }
 
-    function closeModal() {
-        document.getElementById("confirmModal").classList.remove("show");
-        pendingRecord = null;
+    function closeModal(){
+      $("#confirmModal").classList.remove("show");
+      pendingRecord = null;
     }
 
-    document.getElementById("inventaireForm").addEventListener("submit", e => {
-        e.preventDefault();
+    function validateAndBuildRecord(){
+      const date = $("#date").value;
+      const conducteur = $("#conducteur").value.trim();
+      const observations = $("#observations").value.trim();
 
-        const record = {
-            date: e.target.date.value,
-            conducteur: e.target.conducteur.value.trim(),
-            observations: e.target.observations.value.trim(),
-            items: buildItems()
-        };
+      if (!date || !conducteur){
+        alert("Merci de remplir la date et le nom.");
+        return null;
+      }
 
-        if (!record.date || !record.conducteur) {
-            alert("Merci de remplir la date et le nom.");
-            return;
-        }
+      return { date, conducteur, observations, items: buildItems() };
+    }
 
-        openModal(record);
+    // Events
+    $("#itemsContainer").addEventListener("change", (e) => {
+      if (e.target.type !== "radio") return;
+      const row = e.target.closest(".row");
+      if (!row) return;
+      paintRow(row, e.target.value);
+      updateStatsFromDOM();
     });
 
-    document.getElementById("resetFormBtn").addEventListener("click", () => {
-        if (confirm("Réinitialiser le formulaire ?")) {
-            const form = document.getElementById("inventaireForm");
-            form.reset();
-
-            document.querySelectorAll(".item-row").forEach(row => {
-                row.classList.remove("state-OK", "state-Manquant", "state-HS");
-                row.querySelectorAll(".etat-group label").forEach(label => {
-                    label.classList.remove("etat-ok", "etat-manquant", "etat-hs");
-                });
-            });
-
-            updateStatsFromDOM();
-        }
+    $("#exportBtn").addEventListener("click", () => {
+      const record = validateAndBuildRecord();
+      if (!record) return;
+      openModal(record);
     });
 
-    document.getElementById("modalCancel").addEventListener("click", () => {
-        closeModal();
+    $("#resetBtn").addEventListener("click", () => {
+      if (!confirm("Réinitialiser le formulaire ?")) return;
+      $("#inventaireForm").reset();
+      document.querySelectorAll(".row").forEach(row => {
+        row.classList.remove("st-ok","st-warn","st-bad");
+        row.querySelectorAll(".pill").forEach(p => p.classList.remove("sel-ok","sel-warn","sel-bad"));
+      });
+      updateStatsFromDOM();
     });
 
-    document.getElementById("modalConfirm").addEventListener("click", () => {
-        if (!pendingRecord) return;
-        exportCSV(pendingRecord);
-        openEmail(pendingRecord);
-        closeModal();
+    $("#modalCancel").addEventListener("click", closeModal);
+    $("#confirmModal").addEventListener("click", (e) => { if (e.target.id === "confirmModal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    $("#modalConfirm").addEventListener("click", () => {
+      if (!pendingRecord) return;
+      exportCSV(pendingRecord);
+      openEmail(pendingRecord);
+      closeModal();
     });
 
-    document.getElementById("confirmModal").addEventListener("click", (e) => {
-        if (e.target.id === "confirmModal") {
-            closeModal();
-        }
-    });
-
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-            closeModal();
-        }
-    });
-
-    (function init() {
-        renderItemRows();
-        setupEtatListeners();
-        const today = new Date().toISOString().slice(0, 10);
-        document.getElementById("date").value = today;
+    // Init
+    (function init(){
+      renderItems();
+      const today = new Date().toISOString().slice(0,10);
+      $("#date").value = today;
     })();
-</script>
-
+  </script>
 </body>
 </html>
